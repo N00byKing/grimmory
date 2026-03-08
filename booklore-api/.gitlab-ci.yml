@@ -11,7 +11,7 @@ include:
   # - component: "$CI_SERVER_FQDN/to-be-continuous/sqlfluff/gitlab-ci-sqlfluff@1.6"
   #   inputs:
   #     lint-args: "--dialect mariadb"
-  - component: "$CI_SERVER_FQDN/to-be-continuous/gradle/gitlab-ci-gradle@2.13.0"
+  - component: "$CI_SERVER_FQDN/to-be-continuous/gradle/gitlab-ci-gradle@2.13.1"
     inputs:
       image: "eclipse-temurin:25-jdk"
       cli-bin: "./gradlew"
@@ -20,6 +20,7 @@ include:
       build-args: "test jacocoTestReport --no-daemon --parallel"
       dependency-check-disabled: true
       sbom-disabled: true
+      no-publish: true
 # backend_tests:
 #   stage: test
 #   image: eclipse-temurin:25-jdk
