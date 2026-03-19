@@ -318,7 +318,6 @@ public class KoboEntitlementService {
 
         String downloadUrl = koboUrlBuilder.downloadUrl(token, book.getId());
 
-        KoboBookFormat bookFormat = KoboBookFormat.EPUB3;
         KoboSettings koboSettings = appSettingService.getAppSettings().getKoboSettings();
 
         var primaryFile = book.getPrimaryBookFile();
@@ -326,16 +325,12 @@ public class KoboEntitlementService {
             return null;
         }
         boolean isEpubFile = primaryFile.getBookType() == BookFileType.EPUB;
-        boolean isCbxFile = primaryFile.getBookType() == BookFileType.CBX;
 
-        if (koboSettings != null) {
-            if (isEpubFile && primaryFile.isFixedLayout()) {
-                bookFormat = KoboBookFormat.EPUB3FL;
-            } else if (isEpubFile && koboSettings.isConvertToKepub()) {
-                bookFormat = KoboBookFormat.KEPUB;
-            } else if (isCbxFile && koboSettings.isConvertCbxToEpub()) {
-                bookFormat = KoboBookFormat.EPUB3;
-            }
+        // Use EPUB3FL for everything that is fixed layout (pre-paginated epub, cbx) and epub otherwise
+        KoboBookFormat bookFormat = primaryFile.isFixedLayout() ? KoboBookFormat.EPUB3FL : KoboBookFormat.EPUB3;
+        if (koboSettings != null && koboSettings.isConvertToKepub() && isEpubFile && !primaryFile.isFixedLayout()) {
+            // If kepub conversion is explicitly requested however, use kepub
+            bookFormat = KoboBookFormat.KEPUB;
         }
 
         return KoboBookMetadata.builder()

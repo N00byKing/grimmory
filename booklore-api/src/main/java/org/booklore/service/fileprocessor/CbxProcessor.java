@@ -327,6 +327,12 @@ public class CbxProcessor extends AbstractFileProcessor implements BookFileProce
             if (extracted.getComicMetadata() != null) {
                 saveComicMetadata(bookEntity, extracted.getComicMetadata());
             }
+
+            // Set fixed layout
+            bookEntity.getBookFiles().stream()
+                .filter(bf -> bf.getBookType() == BookFileType.CBX && bf.isBook())
+                .findFirst()
+                .ifPresent(ent -> ent.setFixedLayout(true));
         } catch (Exception e) {
             log.warn("Failed to extract ComicInfo metadata for '{}': {}", bookEntity.getPrimaryBookFile().getFileName(), e.getMessage());
             // Fallback to filename-derived title
